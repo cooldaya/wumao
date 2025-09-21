@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔸 菱形棋盘游戏 🔸</title>
+    <script src="./lib/konva.min.js"></script>
+    <!-- 引入优秀的JS库 -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    /> -->
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .game-title {
+        text-align: center;
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      #gameContainer {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      #canvasContainer {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      #gameCanvas {
+        border: 3px solid #34495e;
+        border-radius: 10px;
+      }
+
+      #gameInfo {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        min-width: 280px;
+      }
+
+      .status {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .player-red {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+      }
+
+      .player-green {
+        background: linear-gradient(135deg, #51cf66, #40c057);
+        color: white;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px 0;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #ffa726, #ff7043);
+      }
+
+      .game-stats {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .game-rules {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+      }
+      .game-rules h3 {
+        margin-top: 0;
+        color: #2c3e50;
+        font-size: 18px;
+      }
+      .game-rules ul {
+        padding-left: 20px;
+        line-height: 1.6;
+      }
+      .game-rules li {
+        margin-bottom: 8px;
+        color: #34495e;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .pulse-animation {
+        animation: pulse 0.6s ease-in-out;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-title animate__animated animate__fadeInDown">
+      🔸 菱形棋盘游戏 🔸
+    </div>
+
+    <div id="gameContainer" class="animate__animated animate__fadeInUp">
+      <div id="canvasContainer">
+        <canvas id="gameCanvas" width="600" height="700"></canvas>
+      </div>
+
+      <div id="gameInfo">
+        <div class="status" id="gameStatus">红方回合</div>
+
+        <div class="game-stats">
+          <div class="stat-item">
+            <span>回合数:</span>
+            <span id="turnCount">1</span>
+          </div>
+          <div class="stat-item">
+            <span>红方棋子:</span>
+            <span id="redPieces">5</span>
+          </div>
+          <div class="stat-item">
+            <span>绿方棋子:</span>
+            <span id="greenPieces">5</span>
+          </div>
+        </div>
+
+        <button class="btn" onclick="resetGame()">🔄 重新开始</button>
+        <button class="btn btn-secondary" onclick="undoMove()">
+          ↩️ 撤销操作
+        </button>
+        <button class="btn btn-secondary" onclick="showHint()">💡 提示</button>
+
+        <div class="game-rules">
+          <h3>🎮 游戏规则</h3>
+          <ul>
+            <li>🔴 红方和 🟢 绿方轮流移动棋子</li>
+            <li>📏 棋子只能沿着直线移动，可走多格</li>
+            <li>⚡ 策反机制：作用于同一条线上的相邻位置</li>
+            <li>🎯 夹击策反：敌方棋子被己方两子夹住时策反</li>
+            <li>🔄 包围策反：敌方两子分别在己方棋子两边时策反</li>
+            <li>⛓️ 连锁反应：策反可引发连锁，一次移动多次策反</li>
+            <li>🛡️ 特殊保护：最后1-2子有保护机制，但不影响连锁</li>
+            <li>🏆 胜利条件：策反对方所有棋子，或逗至顶部无路可逃</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="./main.js">
+      
+    </script>
+  </body>
+</html>
