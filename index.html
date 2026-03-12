@@ -145,6 +145,64 @@
       .pulse-animation {
         animation: pulse 0.6s ease-in-out;
       }
+
+      /* 胜利弹窗 */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: slideUp 0.4s ease;
+        min-width: 320px;
+      }
+
+      .modal-title {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+
+      .modal-winner {
+        font-size: 1.8em;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+      }
+
+      .modal-reason {
+        color: #7f8c8d;
+        font-size: 1em;
+        margin-bottom: 25px;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideUp {
+        from { transform: translateY(40px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
     </style>
   </head>
   <body>
@@ -186,12 +244,11 @@
           <ul>
             <li>🔴 红方和 🟢 绿方轮流移动棋子</li>
             <li>📏 棋子只能沿着直线移动，可走多格</li>
-            <li>⚡ 策反机制：作用于同一条线上的相邻位置</li>
-            <li>🎯 夹击策反：敌方棋子被己方两子夹住时策反</li>
-            <li>🔄 包围策反：敌方两子分别在己方棋子两边时策反</li>
-            <li>⛓️ 连锁反应：策反可引发连锁，一次移动多次策反</li>
-            <li>🛡️ 特殊保护：最后1-2子有保护机制，但不影响连锁</li>
-            <li>🏆 胜利条件：策反对方所有棋子，或逗至顶部无路可逃</li>
+            <li>🥪 <b>夹</b>：己方两子夹住敌方棋子 → 策反（对方剩2子时仍有效）</li>
+            <li>🔱 <b>挑</b>：己方一子落在敌方两子之间 → 同时策反两侧（对方剩≤2子时禁用）</li>
+            <li>⛓️ 连锁反应：策反可引发连锁，一次移动多次策反（无保护限制）</li>
+            <li>🛡️ 特殊保护：对方剩最后1子时，夹和挑均无效</li>
+            <li>🏆 胜利条件：策反对方所有棋子，或将最后1子逼至顶部无路可走</li>
           </ul>
         </div>
       </div>
