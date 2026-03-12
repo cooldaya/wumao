@@ -1,261 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🔸 菱形棋盘游戏 🔸</title>
-    <script src="./lib/konva.min.js"></script>
-    <!-- 引入优秀的JS库 -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🔸 菱形棋盘游戏 🔸</title>
+        <script src="./lib/konva.min.js"></script>
+        <!-- 引入优秀的JS库 -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     /> -->
-    <style>
-      body {
-        margin: 0;
-        padding: 20px;
-        font-family: "Microsoft YaHei", Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-      }
+        <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: "Microsoft YaHei", Arial, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+            }
 
-      .game-title {
-        text-align: center;
-        color: white;
-        font-size: 2.5em;
-        margin-bottom: 30px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      }
+            .game-title {
+                text-align: center;
+                color: white;
+                font-size: 2.5em;
+                margin-bottom: 30px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
 
-      #gameContainer {
-        display: flex;
-        gap: 30px;
-        align-items: flex-start;
-        justify-content: center;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
+            #gameContainer {
+                display: flex;
+                gap: 30px;
+                align-items: flex-start;
+                justify-content: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
 
-      #canvasContainer {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      }
+            #canvasContainer {
+                background: white;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
 
-      #gameCanvas {
-        border: 3px solid #34495e;
-        border-radius: 10px;
-      }
+            #gameCanvas {
+                border: 3px solid #34495e;
+                border-radius: 10px;
+            }
 
-      #gameInfo {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        min-width: 280px;
-      }
+            #gameInfo {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                min-width: 280px;
+            }
 
-      .status {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 15px;
-        border-radius: 10px;
-      }
+            .status {
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 20px;
+                font-weight: bold;
+                padding: 15px;
+                border-radius: 10px;
+            }
 
-      .player-red {
-        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        color: white;
-      }
+            .player-red {
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                color: white;
+            }
 
-      .player-green {
-        background: linear-gradient(135deg, #51cf66, #40c057);
-        color: white;
-      }
+            .player-green {
+                background: linear-gradient(135deg, #51cf66, #40c057);
+                color: white;
+            }
 
-      .btn {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-        margin: 5px 0;
-        transition: all 0.3s ease;
-        width: 100%;
-      }
+            .btn {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                margin: 5px 0;
+                transition: all 0.3s ease;
+                width: 100%;
+            }
 
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-      }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
 
-      .btn-secondary {
-        background: linear-gradient(135deg, #ffa726, #ff7043);
-      }
+            .btn-secondary {
+                background: linear-gradient(135deg, #ffa726, #ff7043);
+            }
 
-      .game-stats {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-      }
+            .game-stats {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+            }
 
-      .stat-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        font-weight: 500;
-      }
-      .game-rules {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 4px solid #667eea;
-      }
-      .game-rules h3 {
-        margin-top: 0;
-        color: #2c3e50;
-        font-size: 18px;
-      }
-      .game-rules ul {
-        padding-left: 20px;
-        line-height: 1.6;
-      }
-      .game-rules li {
-        margin-bottom: 8px;
-        color: #34495e;
-      }
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-      .pulse-animation {
-        animation: pulse 0.6s ease-in-out;
-      }
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                font-weight: 500;
+            }
+            .game-rules {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                border-left: 4px solid #667eea;
+            }
+            .game-rules h3 {
+                margin-top: 0;
+                color: #2c3e50;
+                font-size: 18px;
+            }
+            .game-rules ul {
+                padding-left: 20px;
+                line-height: 1.6;
+            }
+            .game-rules li {
+                margin-bottom: 8px;
+                color: #34495e;
+            }
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            .pulse-animation {
+                animation: pulse 0.6s ease-in-out;
+            }
 
-      /* 胜利弹窗 */
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        animation: fadeIn 0.3s ease;
-      }
+            /* 胜利弹窗 */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            }
 
-      .modal-content {
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        animation: slideUp 0.4s ease;
-        min-width: 320px;
-      }
+            .modal-content {
+                background: white;
+                border-radius: 20px;
+                padding: 40px;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                animation: slideUp 0.4s ease;
+                min-width: 320px;
+            }
 
-      .modal-title {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 15px;
-        color: #2c3e50;
-      }
+            .modal-title {
+                font-size: 2em;
+                font-weight: bold;
+                margin-bottom: 15px;
+                color: #2c3e50;
+            }
 
-      .modal-winner {
-        font-size: 1.8em;
-        font-weight: bold;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 10px;
-      }
+            .modal-winner {
+                font-size: 1.8em;
+                font-weight: bold;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 10px;
+            }
 
-      .modal-reason {
-        color: #7f8c8d;
-        font-size: 1em;
-        margin-bottom: 25px;
-      }
+            .modal-reason {
+                color: #7f8c8d;
+                font-size: 1em;
+                margin-bottom: 25px;
+            }
 
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
 
-      @keyframes slideUp {
-        from { transform: translateY(40px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="game-title animate__animated animate__fadeInDown">
-      🔸 菱形棋盘游戏 🔸
-    </div>
-
-    <div id="gameContainer" class="animate__animated animate__fadeInUp">
-      <div id="canvasContainer">
-        <canvas id="gameCanvas" width="600" height="700"></canvas>
-      </div>
-
-      <div id="gameInfo">
-        <div class="status" id="gameStatus">红方回合</div>
-
-        <div class="game-stats">
-          <div class="stat-item">
-            <span>回合数:</span>
-            <span id="turnCount">1</span>
-          </div>
-          <div class="stat-item">
-            <span>红方棋子:</span>
-            <span id="redPieces">5</span>
-          </div>
-          <div class="stat-item">
-            <span>绿方棋子:</span>
-            <span id="greenPieces">5</span>
-          </div>
+            @keyframes slideUp {
+                from {
+                    transform: translateY(40px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="game-title animate__animated animate__fadeInDown">
+            🔸 菱形棋盘游戏 🔸
         </div>
 
-        <button class="btn" onclick="resetGame()">🔄 重新开始</button>
-        <button class="btn btn-secondary" onclick="undoMove()">
-          ↩️ 撤销操作
-        </button>
-        <button class="btn btn-secondary" onclick="showHint()">💡 提示</button>
+        <div id="gameContainer" class="animate__animated animate__fadeInUp">
+            <div id="canvasContainer">
+                <canvas id="gameCanvas" width="600" height="700"></canvas>
+            </div>
 
-        <div class="game-rules">
-          <h3>🎮 游戏规则</h3>
-          <ul>
-            <li>🔴 红方和 🟢 绿方轮流移动棋子</li>
-            <li>📏 棋子只能沿着直线移动，可走多格</li>
-            <li>🥪 <b>夹</b>：己方两子夹住敌方棋子 → 策反（对方剩2子时仍有效）</li>
-            <li>🔱 <b>挑</b>：己方一子落在敌方两子之间 → 同时策反两侧（对方剩≤2子时禁用）</li>
-            <li>⛓️ 连锁反应：策反可引发连锁，一次移动多次策反（无保护限制）</li>
-            <li>🛡️ 特殊保护：对方剩最后1子时，夹和挑均无效</li>
-            <li>🏆 胜利条件：策反对方所有棋子，或将最后1子逼至顶部无路可走</li>
-          </ul>
+            <div id="gameInfo">
+                <div class="status" id="gameStatus">红方回合</div>
+
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span>回合数:</span>
+                        <span id="turnCount">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>红方棋子:</span>
+                        <span id="redPieces">5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>绿方棋子:</span>
+                        <span id="greenPieces">5</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="resetGame()">🔄 重新开始</button>
+                <button class="btn btn-secondary" onclick="undoMove()">
+                    ↩️ 撤销操作
+                </button>
+                <button class="btn btn-secondary" onclick="showHint()">
+                    💡 提示
+                </button>
+
+                <div class="game-rules">
+                    <h3>🎮 游戏规则</h3>
+                    <ul>
+                        <li>🔴 红方和 🟢 绿方轮流移动棋子</li>
+                        <li>📏 棋子只能沿着直线移动，可走多格</li>
+                        <li>
+                            🥪 <b>夹</b>：己方两子夹住敌方棋子 →
+                            策反（对方剩2子时仍有效）
+                        </li>
+                        <li>
+                            🔱 <b>挑</b>：己方一子落在敌方两子之间 →
+                            同时策反两侧（对方剩≤2子时禁用）
+                        </li>
+                        <li>
+                            ⛓️
+                            连锁反应：策反可引发连锁，一次移动多次策反（无保护限制）
+                        </li>
+                        <li>🛡️ 特殊保护：对方剩最后1子时，夹和挑均无效</li>
+                        <li>
+                            🏆
+                            胜利条件：策反对方所有棋子，或将最后1子逼至顶部无路可走
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <script src="./main.js">
-      
-    </script>
-  </body>
+        <script src="./js/main.js"></script>
+    </body>
 </html>
